@@ -1,4 +1,6 @@
 import sys
+import random
+from sympy import isprime
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -37,33 +39,53 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def encrypt(self): # FUNCITON ENCRYPTS USING CAESAR CIPHER AND FIBONACI METHOD FOR EXTRA LAYER OF PROTECTION
-        encrypted_char_list = list()
-        encrypted_message = ''
         message = self.message_to_encrypt.text()
+        charList = list()
+        primes = list()
+        encryptedMessageList = list()
 
-        for x in range(0, len(message)): # CODE BLOCK ENCRYPTS EACH CHARACTER
-            encrypted_char_list.append(ord(message[x]) + 3)
-            encrypted_char_list[x] = (encrypted_char_list[x]-1 + encrypted_char_list[x] +
-                                    encrypted_char_list[x]+1 + ord(message[x]))
-            encrypted_message = encrypted_message + chr(encrypted_char_list[x])            
-        
-        self.message_to_encrypt.setText('') # CLEARS message_to_encrypt TEXTBOX
-        self.output.setText(encrypted_message) # UPDATES output LABEL TO HOLD ENCRYPTED MESSAGE
-        self.update()
+        # FIND ASCII VALUE FOR EACH CHARACTER
+        charList = self.findAscii(message)
 
-    def decrypt(self): # THIS FUNCTION DECRYPTS MESSAGE - MUST BE SAME ENCRYPTION AS APPLICAITON TO DECRYPT
-        decrypted_char_list = list()
-        decrypted_message = ''
-        message = self.message_to_decrypt.text()
+        # GENERATE KEY FOR ENCRYPTION
+        numericalKey = self.generateKey()
 
-        for x in range(0, len(message)): # CODE BLOCK DECRYPTS EACH MESSAGE CHARACTER
-            decrypted_char_list.append(ord(message[x]))
-            decrypted_char_list[x] = chr(int(((decrypted_char_list[x] -1) / 4)-2))
-            decrypted_message = decrypted_message + decrypted_char_list[x]
+        # GET FIBONACCI PRIMES
+        primes = self.fibPrimes(len(charList))
 
-        self.message_to_decrypt.setText('') # CLEARS message_to_decrypt TEXTBOX
-        self.output.setText(decrypted_message) # UPDATES output LABEL TO HOLD DECRYPTED MESSAGE
-        self.update()
+        for i in range(0, len(charList)):
+            charList[i] = (numericalKey + primes[i] + charList[i])
+
+        for i in range(0, len(charList)):
+            item = str(charList[i])
+            encryptedMessageList.append(int(item[0])+30)
+            encryptedMessageList.append(int(item[1])+30)
+            encryptedMessageList.append(int(item[2])+30)
+
+        encryptedMessageList.append(numericalKey)
+
+    def decrypt(self):
+        pass
+
+    def generateKey(self):
+        return random.randint(0, 255)
+
+    def findAscii(self, charArr):
+        asciiList = list()
+        for x in range(0,len(charArr)):
+            asciiList.append(ord(charArr[x]))
+        return asciiList
+    
+    def fibPrimes(self, message_length):
+        primes = list()
+        a = 0
+        b = 1
+        while len(primes) < message_length:
+            c = a + b
+            a = b
+            b = c
+            if isprime(b) : primes.append(b)
+        return primes
 
 app = QApplication(sys.argv)
 window = MainWindow()
