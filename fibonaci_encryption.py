@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         message = self.message_to_encrypt.text()
         charList = list()
         primes = list()
-        encryptedMessageList = list()
+        encryptedMessage = ""
 
         # FIND ASCII VALUE FOR EACH CHARACTER
         charList = self.findAscii(message)
@@ -53,22 +53,34 @@ class MainWindow(QMainWindow):
         # GET FIBONACCI PRIMES
         primes = self.fibPrimes(len(charList))
 
+        #LOOP TO GENERATE FIRST KEY CIPHER
         for i in range(0, len(charList)):
             charList[i] = (numericalKey + primes[i] + charList[i])
 
-        for i in range(0, len(charList)):
-            item = str(charList[i])
-            encryptedMessageList.append(int(item[0])+30)
-            encryptedMessageList.append(int(item[1])+30)
-            encryptedMessageList.append(int(item[2])+30)
+        #GENERATES SECOND KEY CIPHER
+        charList = self.secondKeyCipher(charList)
 
-        encryptedMessageList.append(numericalKey)
+        #FIRST KEY TAG
+        charList.append(chr(numericalKey))
+
+        #UPDATES OUTPUT LABEL
+        
+        self.output_label.setText(encryptedMessage.join(charList))
 
     def decrypt(self):
         pass
 
     def generateKey(self):
         return random.randint(0, 255)
+    
+    def secondKeyCipher(self, arr):
+        returnList = list()
+        for i in range(0,len(arr)):
+            item = str(arr[i])
+            returnList.append(chr(int(item[0])+30))
+            returnList.append(chr(int(item[1])+30))
+            returnList.append(chr(int(item[2])+30))
+        return returnList
 
     def findAscii(self, charArr):
         asciiList = list()
