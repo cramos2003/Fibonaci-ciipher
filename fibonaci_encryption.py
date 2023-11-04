@@ -63,9 +63,9 @@ class MainWindow(QMainWindow):
         #FIRST KEY TAG
         charList.append(chr(numericalKey))
 
-        #UPDATES OUTPUT LABEL
-        
-        self.output_label.setText(encryptedMessage.join(charList))
+        #UPDATES INPUT BOXES AND LABELS
+        self.message_to_encrypt.setText("")
+        self.output.setText(encryptedMessage.join(charList))
 
     def decrypt(self):
         pass
