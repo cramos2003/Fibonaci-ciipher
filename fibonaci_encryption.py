@@ -70,9 +70,8 @@ class MainWindow(QMainWindow):
             tempList = []
             item = str(message[i])
             if len(item) < 3 : item = '0' + item # FOR 2 DIGIT NUMBERS
-            tempList.append(int(item[0]) + 30)
-            tempList.append(int(item[1]) + 30)
-            tempList.append(int(item[2]) + 30)
+            for c in range(0, 3):
+                tempList.append(int(item[c]) + 30)
             message[i] = tempList
         del tempList
         print('Equivilent int unicode values: ', message)
