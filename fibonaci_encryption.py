@@ -40,53 +40,73 @@ class MainWindow(QMainWindow):
 
     def encrypt(self): # FUNCITON ENCRYPTS USING CAESAR CIPHER AND FIBONACI METHOD FOR EXTRA LAYER OF PROTECTION
         message = self.message_to_encrypt.text()
-        charList = list()
-        primes = list()
-        encryptedMessage = ""
+        print('Original message: ', message)
+        message = self.findAscii(message)
+        print('Message in ascii form: ', message)
+        firstKey = self.generateKey()
+        print('First key value: ', firstKey)
+        primes = self.fibPrimes(len(message))
+        print('Fibbonaci Primes: ', primes)
 
-        # FIND ASCII VALUE FOR EACH CHARACTER
-        charList = self.findAscii(message)
+        # PUT IN FUNCTION
+        i = 0
+        while i <= len(primes)-1:
+            primes[i] = (firstKey + primes[i]) % 256
+            i += 1
+        print('Fibbonaci Primes With First Key: ', primes)
 
-        # GENERATE KEY FOR ENCRYPTION
-        numericalKey = self.generateKey()
+        # PUT IN FUNCTION
+        i = 0
+        while i <= len(primes)-1:
+            message[i] = message[i] + primes[i]
+            i += 1
+        print('Ascii vals after primes + message values: ', message)
 
-        # GET FIBONACCI PRIMES
-        primes = self.fibPrimes(len(charList))
+        message.append(firstKey)
+        print("With first key tag: ", message)
 
-        #LOOP TO GENERATE FIRST KEY CIPHER
-        for i in range(0, len(charList)):
-            charList[i] = (numericalKey + primes[i] + charList[i])
+        # PUT INTO FUNCTION
+        for i in range(0, len(message)-1):
+            tempList = []
+            item = str(message[i])
+            if len(item) < 3 : item = '0' + item # FOR 2 DIGIT NUMBERS
+            tempList.append(int(item[0]) + 30)
+            tempList.append(int(item[1]) + 30)
+            tempList.append(int(item[2]) + 30)
+            message[i] = tempList
+        del tempList
+        print('Equivilent int unicode values: ', message)
 
-        #GENERATES SECOND KEY CIPHER
-        charList = self.secondKeyCipher(charList)
+        # PUT INTO FUNCTION
+        for i in range(0, len(message) - 1):
+            message[i][0] = chr(message[i][0])
+            message[i][1] = chr(message[i][1])
+            message[i][2] = chr(message[i][2])
+        message[-1] = chr(message[-1])
+        print('Encrypted character list with first key tag: ', message)
 
-        #FIRST KEY TAG
-        charList.append(chr(numericalKey))
-
-        #UPDATES INPUT BOXES AND LABELS
-        self.message_to_encrypt.setText("")
-        self.output.setText(encryptedMessage.join(charList))
+        # PUT INTO A FUNCTION
+        temp = ''
+        for i in range(0, len(message)-1):
+            for c in range(0, 3):
+                temp = temp + str(message[i][c])
+        message = temp
+        del temp
+        print('Final encrypted message: ', message)
 
     def decrypt(self):
-        pass
+        message = self.message_to_decrypt.text()
+
+    def findAscii(self, charArr):
+        charArr = list(charArr) #TURNS STRING TO CHARACTER LIST
+        i = 0
+        while i <= len(charArr)-1:
+            charArr[i] = ord(charArr[i])
+            i += 1
+        return charArr
 
     def generateKey(self):
         return random.randint(0, 255)
-    
-    def secondKeyCipher(self, arr):
-        returnList = list()
-        for i in range(0,len(arr)):
-            item = str(arr[i])
-            returnList.append(chr(int(item[0])+30))
-            returnList.append(chr(int(item[1])+30))
-            returnList.append(chr(int(item[2])+30))
-        return returnList
-
-    def findAscii(self, charArr):
-        asciiList = list()
-        for x in range(0,len(charArr)):
-            asciiList.append(ord(charArr[x]))
-        return asciiList
     
     def fibPrimes(self, message_length):
         primes = list()
