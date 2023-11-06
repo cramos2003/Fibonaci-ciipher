@@ -48,49 +48,17 @@ class MainWindow(QMainWindow):
         primes = self.fibPrimes(len(message))
         print('Fibbonaci Primes: ', primes)
 
-        # PUT IN FUNCTION
-        i = 0
-        while i <= len(primes)-1:
-            primes[i] = (firstKey + primes[i]) % 256
-            i += 1
-        print('Fibbonaci Primes With First Key: ', primes)
-
-        # PUT IN FUNCTION
-        i = 0
-        while i <= len(primes)-1:
-            message[i] = message[i] + primes[i]
-            i += 1
-        print('Ascii vals after primes + message values: ', message)
+        message = self.fkCipher(firstKey, primes, message)
 
         message.append(firstKey)
         print("With first key tag: ", message)
 
-        # PUT INTO FUNCTION
-        for i in range(0, len(message)-1):
-            tempList = []
-            item = str(message[i])
-            if len(item) < 3 : item = '0' + item # FOR 2 DIGIT NUMBERS
-            for c in range(0, 3):
-                tempList.append(int(item[c]) + 30)
-            message[i] = tempList
-        del tempList
-        print('Equivilent int unicode values: ', message)
+        message = self.convertToUni(message)
 
-        # PUT INTO FUNCTION
-        for i in range(0, len(message) - 1):
-            for c in range(0, 3):
-                message[i][c] = chr(message[i][c])
-        message[-1] = chr(message[-1])
-        print('Encrypted character list with first key tag: ', message)
+        message = self.encryptedMessage(message)
 
-        # PUT INTO A FUNCTION
-        temp = ''
-        for i in range(0, len(message)-1):
-            for c in range(0, 3):
-                temp = temp + str(message[i][c])
-        message = temp
-        del temp
-        print('Final encrypted message: ', message)
+        self.message_to_encrypt.setText('')
+        self.output.setText(message)
 
     def decrypt(self):
         message = self.message_to_decrypt.text()
@@ -116,6 +84,47 @@ class MainWindow(QMainWindow):
             b = c
             if isprime(b) : primes.append(b)
         return primes
+
+    def fkCipher(self, fk, p, m):
+        i = 0
+        while i <= len(p)-1:
+            p[i] = (fk + p[i]) % 256
+            i += 1
+        print('Fibbonaci Primes With First Key: ', p)
+        i = 0
+        while i <= len(p)-1:
+            m[i] = m[i] + p[i]
+            i += 1
+        print('Ascii vals after primes + message values: ', m)
+        return m
+
+    def convertToUni(self, m):
+        for i in range(0, len(m)-1):
+            tempList = []
+            item = str(m[i])
+            if len(item) < 3 : item = '0' + item # FOR 2 DIGIT NUMBERS
+            for c in range(0, 3):
+                tempList.append(int(item[c]) + 30)
+            m[i] = tempList
+        del tempList
+        print('Equivilent int unicode values: ', m)
+        return m
+
+    def encryptedMessage(self, m, ):
+        for i in range(0, len(m) - 1):
+            for c in range(0, 3):
+                m[i][c] = chr(m[i][c])
+        m[-1] = chr(m[-1])
+        print('Encrypted character list with first key tag: ', m)
+
+        temp = ''
+        for i in range(0, len(m)-1):
+            for c in range(0, 3):
+                temp = temp + str(m[i][c])
+        m = temp
+        del temp
+        print('Final encrypted message: ', m)
+        return m
 
 app = QApplication(sys.argv)
 window = MainWindow()
