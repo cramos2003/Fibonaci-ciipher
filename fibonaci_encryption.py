@@ -41,10 +41,13 @@ class MainWindow(QMainWindow):
     def encrypt(self): # FUNCITON ENCRYPTS USING CAESAR CIPHER AND FIBONACI METHOD FOR EXTRA LAYER OF PROTECTION
         message = self.message_to_encrypt.text()
         print('Original message: ', message)
+
         message = self.findAscii(message)
         print('Message in ascii form: ', message)
+
         firstKey = self.generateKey()
         print('First key value: ', firstKey)
+        
         primes = self.fibPrimes(len(message))
         print('Fibbonaci Primes: ', primes)
 
