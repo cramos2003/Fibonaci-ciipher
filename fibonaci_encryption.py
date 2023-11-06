@@ -78,9 +78,8 @@ class MainWindow(QMainWindow):
 
         # PUT INTO FUNCTION
         for i in range(0, len(message) - 1):
-            message[i][0] = chr(message[i][0])
-            message[i][1] = chr(message[i][1])
-            message[i][2] = chr(message[i][2])
+            for c in range(0, 3):
+                message[i][c] = chr(message[i][c])
         message[-1] = chr(message[-1])
         print('Encrypted character list with first key tag: ', message)
 
