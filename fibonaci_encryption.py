@@ -40,24 +40,14 @@ class MainWindow(QMainWindow):
 
     def encrypt(self): # FUNCITON ENCRYPTS USING CAESAR CIPHER AND FIBONACI METHOD FOR EXTRA LAYER OF PROTECTION
         message = self.message_to_encrypt.text()
-        print('Original message: ', message)
-
         message = self.findAscii(message)
-        print('Message in ascii form: ', message)
-
         firstKey = self.generateKey()
-        print('First key value: ', firstKey)
-        
         primes = self.fibPrimes(len(message))
-        print('Fibbonaci Primes: ', primes)
-
         message = self.fkCipher(firstKey, primes, message)
 
         message.append(firstKey)
-        print("With first key tag: ", message)
 
         message = self.convertToUni(message)
-
         message = self.encryptedMessage(message)
 
         self.message_to_encrypt.setText('')
@@ -65,6 +55,18 @@ class MainWindow(QMainWindow):
 
     def decrypt(self):
         message = self.message_to_decrypt.text()
+        message = self.findAscii(message)
+        message = self.uniToAscii(message)
+        primes = self.fibPrimes(len(message)-1)
+        
+        for x in range(0, len(primes)):
+            primes[x] = primes[x] - primes[x] * 2
+
+        message = self.fkCipherReversed (message[-1]*(-1), primes, message)
+        message = self.decryptedMessage(message)
+        
+        self.message_to_decrypt.setText('')
+        self.output.setText(message)
 
     def findAscii(self, charArr):
         charArr = list(charArr) #TURNS STRING TO CHARACTER LIST
@@ -101,6 +103,14 @@ class MainWindow(QMainWindow):
         print('Ascii vals after primes + message values: ', m)
         return m
 
+    def fkCipherReversed(self, fk, p, m):
+        for i in range(0, len(m) - 1):
+            m[i] = (m[i] + p[i] + fk) % 256
+            if m[i] < 0: m[i] = 0
+            m[i] = chr(m[i])
+        m.pop(-1)
+        return m
+
     def convertToUni(self, m):
         for i in range(0, len(m)-1):
             tempList = []
@@ -113,20 +123,53 @@ class MainWindow(QMainWindow):
         print('Equivilent int unicode values: ', m)
         return m
 
-    def encryptedMessage(self, m, ):
+    def encryptedMessage(self, m):
         for i in range(0, len(m) - 1):
             for c in range(0, 3):
                 m[i][c] = chr(m[i][c])
-        m[-1] = chr(m[-1])
         print('Encrypted character list with first key tag: ', m)
 
         temp = ''
+        tagHolder = m[-1]
         for i in range(0, len(m)-1):
             for c in range(0, 3):
                 temp = temp + str(m[i][c])
         m = temp
+        m = str(m) + str(chr(tagHolder))
         del temp
+        del tagHolder
         print('Final encrypted message: ', m)
+        return m
+
+    def decryptedMessage(self, m):
+        temp = ''
+        for i in range(0, len(m)):
+            temp = temp + m[i]
+        m = temp
+        del temp
+        return m
+
+    def uniToAscii(self, m):
+        firstKeyHolder = m[-1]
+
+        for i in range(0, len(m)-1):
+            m[i] = m[i] - 30
+        print('Ascii equivilent values: ', m)
+
+        # COMBINE EVERY 3 NUMBERS WITHIN LIST EXCEPT LAST ITEM
+        for i in range(0, int((len(m) - 1) / 3)):
+            groupIndex = i * 3 # GROUPS EVERY 3 ITEMS FOR INDEX PORPOSES
+            temp = ''
+            c = 0
+            while c < 3:
+                temp = temp + str(m[groupIndex + c])
+                c += 1
+            m[groupIndex] = int(temp)
+        del temp
+        m = [x for x in m if x > 9]
+        if firstKeyHolder < 10: m.append(firstKeyHolder)
+        del firstKeyHolder
+        print('Combine integer values: ', m)
         return m
 
 app = QApplication(sys.argv)
